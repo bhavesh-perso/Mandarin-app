@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HSK Ascent</title>
+<style>
+:root{--bg:#0e1117;--card:#161b24;--card2:#1e2531;--accent:#5eead4;--accent2:#a78bfa;--text:#e6e9ef;--sub:#8b93a3;--good:#4ade80;--bad:#f87171;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh;}
+.wrap{max-width:480px;margin:0 auto;padding:20px 16px 60px;}
+h1{font-size:1.4rem;margin:0 0 4px;}
+.sub{color:var(--sub);font-size:.85rem;margin-bottom:20px;}
+.card{background:var(--card);border-radius:16px;padding:18px;margin-bottom:14px;}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+.badge{background:var(--card2);border-radius:999px;padding:6px 12px;font-size:.8rem;display:flex;gap:6px;align-items:center;}
+.xpbar{height:8px;background:var(--card2);border-radius:999px;overflow:hidden;margin:8px 0;}
+.xpfill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .4s;}
+button{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#0e1117;border:none;border-radius:10px;padding:12px 18px;font-weight:700;font-size:.95rem;cursor:pointer;width:100%;}
+button.ghost{background:transparent;border:1px solid var(--card2);color:var(--text);}
+button:disabled{opacity:.4;}
+input{width:100%;padding:12px;border-radius:10px;border:1px solid var(--card2);background:var(--card2);color:var(--text);font-size:1rem;margin-bottom:10px;}
+.lesson-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--card2);}
+.lesson-row:last-child{border-bottom:none;}
+.hanzi-big{font-size:3.5rem;text-align:center;margin:10px 0;}
+.pinyin{text-align:center;color:var(--accent);font-size:1.2rem;margin-bottom:4px;}
+.eng{text-align:center;color:var(--sub);margin-bottom:16px;}
+.opt{display:block;width:100%;text-align:left;background:var(--card2);color:var(--text);border:1px solid transparent;margin-bottom:8px;font-weight:400;}
+.opt.correct{border-color:var(--good);background:#14352a;}
+.opt.wrong{border-color:var(--bad);background:#3a1f1f;}
+#writer-target{margin:0 auto;}
+.hidden{display:none;}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--card2);padding:10px 18px;border-radius:10px;font-size:.85rem;}
+.small{font-size:.75rem;color:var(--sub);}
+a{color:var(--accent);}
+#app > *{animation:fadeSlideIn .35s ease both;}
+@keyframes fadeSlideIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+button{transition:transform .12s ease, filter .12s ease;}
+button:active:not(:disabled){transform:scale(.96);filter:brightness(.95);}
+.opt:active:not(:disabled){transform:scale(.98);}
+h1{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent;display:inline-block;}
+.hanzi-big{text-shadow:0 0 30px rgba(94,234,212,.25);animation:pop .4s cubic-bezier(.34,1.56,.64,1);}
+@keyframes pop{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+.badge{transition:transform .2s;}
+.streak-fire{display:inline-block;animation:flicker 1.4s ease-in-out infinite;}
+@keyframes flicker{0%,100%{transform:scale(1) rotate(-2deg)}50%{transform:scale(1.15) rotate(2deg)}}
+.mini-progress{display:flex;gap:4px;margin-bottom:14px;}
+.mini-progress div{flex:1;height:5px;border-radius:999px;background:var(--card2);}
+.mini-progress div.on{background:linear-gradient(90deg,var(--accent),var(--accent2));}
+.unit-icon{font-size:1.3rem;margin-right:8px;}
+.confetti{position:fixed;top:-20px;font-size:1.4rem;pointer-events:none;z-index:999;animation:fall linear forwards;}
+@keyframes fall{to{transform:translateY(110vh) rotate(360deg);opacity:.3}}
+.levelup{position:fixed;inset:0;background:rgba(14,17,23,.85);display:flex;align-items:center;justify-content:center;flex-direction:column;z-index:1000;animation:fadeSlideIn .3s ease both;}
+.levelup h2{font-size:2rem;margin:0;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent;}
+.card{transition:transform .15s ease;}
+.lesson-row{transition:opacity .15s;}
+.path{position:relative;padding:6px 0 10px;}
+.path-line{position:absolute;left:50%;top:10px;bottom:10px;width:4px;background:var(--card2);transform:translateX(-50%);z-index:0;border-radius:4px;}
+.node{position:relative;display:flex;align-items:center;gap:12px;margin-bottom:26px;z-index:1;width:64%;}
+.node.left{margin-right:auto;}
+.node.right{margin-left:auto;flex-direction:row-reverse;text-align:right;}
+.node-circle{flex-shrink:0;width:58px;height:58px;border-radius:50%;font-size:1.5rem;border:4px solid var(--bg);background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,.45);cursor:pointer;color:#0e1117;}
+.node-circle.done{background:linear-gradient(135deg,#4ade80,#22c55e);}
+.node-circle:active{transform:scale(.92);}
+.node-label{font-size:.78rem;line-height:1.3;}
+.node-label b{display:block;color:var(--text);}
+.unit-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+.unit-tile{border-radius:18px;padding:16px 14px;cursor:pointer;min-height:108px;display:flex;flex-direction:column;justify-content:space-between;color:#0e1117;box-shadow:0 6px 16px rgba(0,0,0,.35);}
+.unit-tile .uicon{font-size:1.9rem;}
+.unit-tile .uname{font-size:.85rem;font-weight:700;margin-top:8px;line-height:1.2;}
+.unit-tile .uprog{font-size:.7rem;opacity:.7;font-weight:600;margin-top:2px;}
+.unit-tile.done{outline:3px solid #fff;outline-offset:-3px;}
+.unit-tile:active{transform:scale(.95);}
+.wrap{padding-bottom:90px;}
+.stickyhead{position:sticky;top:0;background:var(--bg);z-index:40;padding-top:14px;margin:0 -16px;padding-left:16px;padding-right:16px;padding-bottom:8px;}
+.section-label{text-transform:uppercase;letter-spacing:.08em;font-size:.7rem;color:var(--sub);margin:4px 0 10px;font-weight:700;}
+.hero{border-radius:20px;padding:20px;margin-bottom:16px;background:linear-gradient(135deg,var(--accent2),var(--accent));color:#0e1117;position:relative;overflow:hidden;}
+.hero .htag{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;opacity:.75;font-weight:700;}
+.hero .hname{font-size:1.3rem;font-weight:800;margin:4px 0 10px;}
+.hero button{background:#0e1117;color:var(--accent);width:auto;padding:10px 18px;}
+.ring{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0;}
+.ring span{position:relative;z-index:1;}
+.ring::before{content:'';position:absolute;inset:4px;border-radius:50%;background:rgba(14,17,23,.82);}
+.unit-tile{flex-direction:row;align-items:center;gap:10px;min-height:auto;padding:12px;}
+.unit-tile .utext{display:flex;flex-direction:column;}
+.tabbar{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--card2);display:flex;justify-content:space-around;padding:10px 0 max(10px,env(safe-area-inset-bottom));z-index:50;}
+.tab{background:none!important;border:none;color:var(--sub);font-size:.68rem;display:flex;flex-direction:column;align-items:center;gap:3px;width:auto;padding:2px 16px;font-weight:600;}
+.tab.active{color:var(--accent);}
+.tab .ticon{font-size:1.2rem;}
+.stat-big{font-size:2.2rem;font-weight:800;}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+
+<script>
+/* ===== FIREBASE CONFIG =====
+Create a free project at console.firebase.google.com, enable
+Email/Password auth + Firestore, then paste your config below.
+Leaving this as-is runs the app in local-only mode (no cross-device sync). */
+const FIREBASE_CONFIG = null; // e.g. { apiKey:"...", authDomain:"...", projectId:"...", ... }
+
+let auth=null, db=null, uid=null;
+
+function loadScript(src){
+  return new Promise((resolve,reject)=>{
+    const s=document.createElement('script');
+    s.src=src; s.onload=()=>resolve(); s.onerror=()=>reject(new Error('Failed to load '+src));
+    document.head.appendChild(s);
+  });
+}
+
+async function ensureFirebase(){
+  if(!FIREBASE_CONFIG) return false;
+  if(window.firebase && auth) return true;
+  try{
+    await loadScript('https://cdn.jsdelivr.net/npm/firebase@10.7.1/firebase-app-compat.js');
+    await loadScript('https://cdn.jsdelivr.net/npm/firebase@10.7.1/firebase-auth-compat.js');
+    await loadScript('https://cdn.jsdelivr.net/npm/firebase@10.7.1/firebase-firestore-compat.js');
+    firebase.initializeApp(FIREBASE_CONFIG);
+    auth = firebase.auth();
+    db = firebase.firestore();
+    return true;
+  }catch(e){ console.warn('Firebase failed to load', e); return false; }
+}
+
+/* ===== WORD DATA — HSK1, six units (63 words) =====
+Append more units to this array as you go through the rest of HSK1/HSK2. */
+const UNITS = [
+ {name:"Greetings", words:[
+  {h:"你好",p:"nǐ hǎo",e:"hello"},{h:"谢谢",p:"xièxiè",e:"thank you"},{h:"再见",p:"zàijiàn",e:"goodbye"},
+  {h:"我",p:"wǒ",e:"I / me"},{h:"你",p:"nǐ",e:"you"},{h:"他",p:"tā",e:"he / him"},
+  {h:"是",p:"shì",e:"to be"},{h:"不",p:"bù",e:"no / not"},{h:"的",p:"de",e:"(possessive particle)"},
+  {h:"人",p:"rén",e:"person"},{h:"好",p:"hǎo",e:"good"},{h:"叫",p:"jiào",e:"to be called"},
+  {h:"什么",p:"shénme",e:"what"},{h:"名字",p:"míngzi",e:"name"},{h:"很",p:"hěn",e:"very"}
+ ]},
+ {name:"Numbers & Time", words:[
+  {h:"一",p:"yī",e:"one"},{h:"二",p:"èr",e:"two"},{h:"三",p:"sān",e:"three"},{h:"四",p:"sì",e:"four"},
+  {h:"五",p:"wǔ",e:"five"},{h:"六",p:"liù",e:"six"},{h:"七",p:"qī",e:"seven"},{h:"八",p:"bā",e:"eight"},
+  {h:"九",p:"jiǔ",e:"nine"},{h:"十",p:"shí",e:"ten"},{h:"现在",p:"xiànzài",e:"now"},{h:"今天",p:"jīntiān",e:"today"}
+ ]},
+ {name:"Family", words:[
+  {h:"爸爸",p:"bàba",e:"dad"},{h:"妈妈",p:"māma",e:"mom"},{h:"儿子",p:"érzi",e:"son"},
+  {h:"女儿",p:"nǚ'ér",e:"daughter"},{h:"朋友",p:"péngyou",e:"friend"},{h:"老师",p:"lǎoshī",e:"teacher"},
+  {h:"学生",p:"xuésheng",e:"student"},{h:"同学",p:"tóngxué",e:"classmate"},{h:"家",p:"jiā",e:"family / home"}
+ ]},
+ {name:"Common Verbs", words:[
+  {h:"去",p:"qù",e:"to go"},{h:"来",p:"lái",e:"to come"},{h:"吃",p:"chī",e:"to eat"},{h:"喝",p:"hē",e:"to drink"},
+  {h:"看",p:"kàn",e:"to look / watch"},{h:"说",p:"shuō",e:"to speak"},{h:"想",p:"xiǎng",e:"to want / think"},
+  {h:"喜欢",p:"xǐhuan",e:"to like"},{h:"要",p:"yào",e:"to want"},{h:"写",p:"xiě",e:"to write"}
+ ]},
+ {name:"Places & Objects", words:[
+  {h:"学校",p:"xuéxiào",e:"school"},{h:"商店",p:"shāngdiàn",e:"shop"},{h:"医院",p:"yīyuàn",e:"hospital"},
+  {h:"书",p:"shū",e:"book"},{h:"水",p:"shuǐ",e:"water"},{h:"茶",p:"chá",e:"tea"},{h:"车",p:"chē",e:"car"},
+  {h:"电脑",p:"diànnǎo",e:"computer"},{h:"手机",p:"shǒujī",e:"phone"}
+ ]},
+ {name:"Descriptive Words", words:[
+  {h:"大",p:"dà",e:"big"},{h:"小",p:"xiǎo",e:"small"},{h:"多",p:"duō",e:"many"},{h:"少",p:"shǎo",e:"few"},
+  {h:"冷",p:"lěng",e:"cold"},{h:"热",p:"rè",e:"hot"},{h:"高兴",p:"gāoxìng",e:"happy"},{h:"忙",p:"máng",e:"busy"}
+ ]},
+ {name:"Question Words & Particles", words:[
+  {h:"这",p:"zhè",e:"this"},{h:"那",p:"nà",e:"that"},{h:"哪",p:"nǎ",e:"which"},{h:"哪儿",p:"nǎr",e:"where"},
+  {h:"谁",p:"shéi",e:"who"},{h:"怎么",p:"zěnme",e:"how"},{h:"怎么样",p:"zěnmeyàng",e:"how about"},
+  {h:"多少",p:"duōshǎo",e:"how much"},{h:"几",p:"jǐ",e:"how many / a few"},{h:"吗",p:"ma",e:"(question particle)"},
+  {h:"呢",p:"ne",e:"(question particle)"},{h:"了",p:"le",e:"(aspectual particle)"},{h:"喂",p:"wèi",e:"hello (on phone)"}
+ ]},
+ {name:"Grammar Words", words:[
+  {h:"会",p:"huì",e:"can / know how to"},{h:"能",p:"néng",e:"can / be able to"},{h:"和",p:"hé",e:"and"},
+  {h:"都",p:"dōu",e:"all"},{h:"太",p:"tài",e:"too (much)"},{h:"本",p:"běn",e:"(measure word: books)"},
+  {h:"个",p:"gè",e:"(general measure word)"},{h:"块",p:"kuài",e:"(measure word: money/pieces)"},
+  {h:"岁",p:"suì",e:"years old"},{h:"些",p:"xiē",e:"some"},{h:"一点儿",p:"yīdiǎnr",e:"a little"}
+ ]},
+ {name:"Time & Dates", words:[
+  {h:"明天",p:"míngtiān",e:"tomorrow"},{h:"昨天",p:"zuótiān",e:"yesterday"},{h:"年",p:"nián",e:"year"},
+  {h:"月",p:"yuè",e:"month"},{h:"号",p:"hào",e:"day (of month)"},{h:"星期",p:"xīngqī",e:"week"},
+  {h:"上午",p:"shàngwǔ",e:"morning"},{h:"下午",p:"xiàwǔ",e:"afternoon"},{h:"中午",p:"zhōngwǔ",e:"noon"},
+  {h:"时候",p:"shíhou",e:"time"},{h:"分钟",p:"fēnzhōng",e:"minute"}
+ ]},
+ {name:"Food & Objects", words:[
+  {h:"菜",p:"cài",e:"vegetable / dish"},{h:"米饭",p:"mǐfàn",e:"rice"},{h:"水果",p:"shuǐguǒ",e:"fruit"},
+  {h:"苹果",p:"píngguǒ",e:"apple"},{h:"杯子",p:"bēizi",e:"cup"},{h:"衣服",p:"yīfu",e:"clothes"},
+  {h:"椅子",p:"yǐzi",e:"chair"},{h:"桌子",p:"zhuōzi",e:"desk"},{h:"东西",p:"dōngxi",e:"thing"},{h:"钱",p:"qián",e:"money"}
+ ]},
+ {name:"People, Places & Animals", words:[
+  {h:"北京",p:"Běijīng",e:"Beijing"},{h:"中国",p:"Zhōngguó",e:"China"},{h:"出租车",p:"chūzūchē",e:"taxi"},
+  {h:"飞机",p:"fēijī",e:"airplane"},{h:"饭店",p:"fàndiàn",e:"restaurant / hotel"},{h:"汉语",p:"hànyǔ",e:"Mandarin Chinese"},
+  {h:"先生",p:"xiānsheng",e:"sir / mister"},{h:"小姐",p:"xiǎojiě",e:"Miss"},{h:"医生",p:"yīshēng",e:"doctor"},
+  {h:"狗",p:"gǒu",e:"dog"},{h:"猫",p:"māo",e:"cat"}
+ ]},
+ {name:"Location Words", words:[
+  {h:"上",p:"shàng",e:"up / on"},{h:"下",p:"xià",e:"down"},{h:"里面",p:"lǐmiàn",e:"inside"},
+  {h:"前面",p:"qiánmiàn",e:"front"},{h:"后面",p:"hòumiàn",e:"behind"},{h:"在",p:"zài",e:"in / at"}
+ ]},
+ {name:"Daily Action Verbs", words:[
+  {h:"爱",p:"ài",e:"to love"},{h:"读",p:"dú",e:"to read"},{h:"工作",p:"gōngzuò",e:"to work / job"},
+  {h:"回",p:"huí",e:"to return"},{h:"开",p:"kāi",e:"to open"},{h:"买",p:"mǎi",e:"to buy"},
+  {h:"请",p:"qǐng",e:"please"},{h:"认识",p:"rènshi",e:"to know (a person)"},{h:"有",p:"yǒu",e:"to have"},
+  {h:"住",p:"zhù",e:"to live (at)"},{h:"做",p:"zuò",e:"to do"},{h:"坐",p:"zuò",e:"to sit"}
+ ]},
+ {name:"More Verbs & Phrases", words:[
+  {h:"看见",p:"kànjiàn",e:"to see"},{h:"睡觉",p:"shuìjiào",e:"to sleep"},{h:"听",p:"tīng",e:"to listen"},
+  {h:"下雨",p:"xiàyǔ",e:"to rain"},{h:"学习",p:"xuéxí",e:"to study"},{h:"打电话",p:"dǎ diànhuà",e:"to call (phone)"}
+ ]},
+ {name:"Polite Phrases & Misc", words:[
+  {h:"她",p:"tā",e:"she / her"},{h:"我们",p:"wǒmen",e:"we / us"},{h:"不客气",p:"búkèqi",e:"you're welcome"},
+  {h:"没关系",p:"méi guānxi",e:"it doesn't matter"},{h:"对不起",p:"duìbuqǐ",e:"sorry"},{h:"漂亮",p:"piàoliang",e:"pretty"},
+  {h:"没有",p:"méiyǒu",e:"to not have / did not"},{h:"字",p:"zì",e:"character"}
+ ]}
+];
+const ALL_WORDS = UNITS.flatMap(u=>u.words);
+
+/* ===== STATE ===== */
+let state = {xp:0, level:1, streak:0, lastDate:null, learned:{}};
+
+function loadLocal(){ try{ const s=localStorage.getItem('hskAscentState'); if(s) state=JSON.parse(s); }catch(e){ console.warn('localStorage unavailable, using in-memory state'); } }
+function saveLocal(){ try{ localStorage.setItem('hskAscentState', JSON.stringify(state)); }catch(e){} }
+async function saveCloud(){ if(db&&uid) await db.collection('users').doc(uid).set(state); }
+async function loadCloud(){ if(db&&uid){ const d=await db.collection('users').doc(uid).get(); if(d.exists) state=d.data(); } }
+async function persist(){ saveLocal(); await saveCloud(); }
+
+function xpForNextLevel(lvl){ return lvl*100; }
+let justLeveledUp = false;
+function addXP(n){
+  state.xp += n;
+  while(state.xp >= xpForNextLevel(state.level)){ state.xp -= xpForNextLevel(state.level); state.level++; justLeveledUp=true; }
+  const today = new Date().toDateString();
+  if(state.lastDate !== today){
+    const y = new Date(Date.now()-86400000).toDateString();
+    state.streak = (state.lastDate===y) ? state.streak+1 : 1;
+    state.lastDate = today;
+  }
+}
+
+let audioCtx=null;
+function beep(freq,dur,type){
+  try{
+    audioCtx = audioCtx || new (window.AudioContext||window.webkitAudioContext)();
+    const o=audioCtx.createOscillator(), g=audioCtx.createGain();
+    o.type=type||'sine'; o.frequency.value=freq;
+    g.gain.setValueAtTime(.15, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(.001, audioCtx.currentTime+dur/1000);
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start(); o.stop(audioCtx.currentTime+dur/1000);
+  }catch(e){}
+}
+function soundCorrect(){ beep(880,150); setTimeout(()=>beep(1160,180),90); }
+function soundWrong(){ beep(180,220,'sawtooth'); }
+
+function confettiBurst(){
+  const emojis=['🎉','✨','⭐','🎊','🔥'];
+  for(let i=0;i<24;i++){
+    const el=document.createElement('div');
+    el.className='confetti';
+    el.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+    el.style.left=Math.random()*100+'vw';
+    el.style.animationDuration=(1.5+Math.random()*1.5)+'s';
+    el.style.fontSize=(1+Math.random())+'rem';
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(), 3200);
+  }
+}
+
+function showLevelUp(level){
+  const el=document.createElement('div');
+  el.className='levelup';
+  el.innerHTML = `<div style="font-size:3rem">🏆</div><h2>Level ${level}!</h2><p class="small">Keep going — 加油!</p>`;
+  document.body.appendChild(el);
+  confettiBurst();
+  beep(660,120); setTimeout(()=>beep(880,120),120); setTimeout(()=>beep(1100,220),240);
+  setTimeout(()=>el.remove(), 1800);
+}
+
+/* ===== ROUTER / SCREENS ===== */
+const app = document.getElementById('app');
+
+function speak(text){
+  try{ const u=new SpeechSynthesisUtterance(text); u.lang='zh-CN'; speechSynthesis.speak(u); }catch(e){}
+}
+
+const UNIT_ICONS = ["👋","🔢","👪","🏃","🏠","🎨","❓","📐","🕐","🍜","🐾","🧭","💪","✨","🎉"];
+
+function tabBar(active){
+  return `<div class="tabbar">
+    <button class="tab ${active==='home'?'active':''}" onclick="renderHome()"><span class="ticon">🏠</span>Home</button>
+    <button class="tab ${active==='stats'?'active':''}" onclick="renderStats()"><span class="ticon">📊</span>Stats</button>
+    <button class="tab ${active==='account'?'active':''}" onclick="renderAccount()"><span class="ticon">👤</span>Account</button>
+  </div>`;
+}
+
+function renderStats(){
+  const totalLearned = Object.keys(state.learned).length;
+  const unitRows = UNITS.map((u,i)=>{
+    const done=u.words.filter(w=>state.learned[w.h]).length;
+    return `<div class="lesson-row"><span>${UNIT_ICONS[i]||'📖'} ${u.name}</span><span class="small">${done}/${u.words.length}</span></div>`;
+  }).join('');
+  app.innerHTML = `
+    <h1>Your Stats</h1>
+    <div class="sub">How your Mandarin is coming along</div>
+    <div class="card" style="display:flex;justify-content:space-around;text-align:center;">
+      <div><div class="stat-big">${state.level}</div><div class="small">Level</div></div>
+      <div><div class="stat-big">${state.streak}🔥</div><div class="small">Streak</div></div>
+      <div><div class="stat-big">${totalLearned}</div><div class="small">Words</div></div>
+    </div>
+    <div class="card">${unitRows}</div>
+    ${tabBar('stats')}
+  `;
+}
+
+function renderHome(){
+  if(justLeveledUp){ justLeveledUp=false; showLevelUp(state.level); }
+  const need = xpForNextLevel(state.level);
+  const pct = Math.min(100, Math.round(state.xp/need*100));
+  const totalLearned = Object.keys(state.learned).length;
+  const nextIdx = UNITS.findIndex(u=>u.words.filter(w=>state.learned[w.h]).length < u.words.length);
+  const hero = nextIdx===-1
+    ? `<div class="hero"><div class="htag">HSK 1 complete 🎉</div><div class="hname">All 150 words learned!</div><button onclick="startLesson(0)">Review anything</button></div>`
+    : (()=>{ const u=UNITS[nextIdx]; const done=u.words.filter(w=>state.learned[w.h]).length;
+        return `<div class="hero"><div class="htag">Continue</div><div class="hname">${UNIT_ICONS[nextIdx]||'📖'} ${u.name}</div><div class="small" style="color:#0e1117;opacity:.8;margin-bottom:10px">${done}/${u.words.length} words done</div><button onclick="startLesson(${nextIdx})">Continue →</button></div>`; })();
+  app.innerHTML = `
+    <div class="stickyhead">
+      <h1>HSK Ascent</h1>
+      <div class="sub" style="margin-bottom:10px">汉语升阶 · ${totalLearned}/${ALL_WORDS.length} words learned</div>
+      <div class="card" style="margin-bottom:0">
+        <div class="topbar">
+          <div class="badge"><span class="streak-fire">🔥</span> ${state.streak} day streak</div>
+          <div class="badge">Lv. ${state.level}</div>
+        </div>
+        <div class="xpbar"><div class="xpfill" style="width:${pct}%"></div></div>
+        <div class="small">${state.xp} / ${need} XP to next level</div>
+      </div>
+    </div>
+    ${hero}
+    <div class="section-label">HSK 1 · All Units</div>
+    <div class="unit-grid" id="unitList"></div>
+    ${tabBar('home')}
+  `;
+  const TILE_COLORS = ['linear-gradient(135deg,#5eead4,#22d3ee)','linear-gradient(135deg,#a78bfa,#f472b6)','linear-gradient(135deg,#fbbf24,#f97316)','linear-gradient(135deg,#34d399,#10b981)','linear-gradient(135deg,#60a5fa,#818cf8)','linear-gradient(135deg,#f87171,#fb923c)','linear-gradient(135deg,#c084fc,#818cf8)','linear-gradient(135deg,#4ade80,#22c55e)'];
+  const box = document.getElementById('unitList');
+  UNITS.forEach((u,i)=>{
+    const done = u.words.filter(w=>state.learned[w.h]).length;
+    const complete = done===u.words.length;
+    const pctDone = Math.round(done/u.words.length*100);
+    const tile = document.createElement('div');
+    tile.className = 'unit-tile' + (complete?' done':'');
+    tile.style.background = TILE_COLORS[i%TILE_COLORS.length];
+    tile.innerHTML = `<div class="ring" style="background:conic-gradient(#0e1117 ${pctDone*3.6}deg, rgba(14,17,23,.3) 0deg)"><span>${complete?'✅':(UNIT_ICONS[i]||'📖')}</span></div><div class="utext"><div class="uname">${u.name}</div><div class="uprog">${done}/${u.words.length}</div></div>`;
+    tile.onclick=()=>startLesson(i);
+    box.appendChild(tile);
+  });
+}
+
+function renderAccount(){
+  app.innerHTML = `
+    <h1>Account</h1>
+    <div class="sub">Sign in to sync progress across devices</div>
+    <div class="card" id="acctBox">
+      ${FIREBASE_CONFIG ? `<p class="small">Loading sign-in…</p>` : `
+        <p class="small">Firebase isn't configured yet. Open this file, find <code>FIREBASE_CONFIG</code> near the top of the script, and paste in your free Firebase project's config to enable sign-in and cross-device sync. Until then, progress saves locally to this browser only.</p>
+      `}
+    </div>
+    <button class="ghost" onclick="renderHome()">Back</button>
+    ${tabBar('account')}
+  `;
+  if(FIREBASE_CONFIG){
+    ensureFirebase().then(ok=>{
+      const box=document.getElementById('acctBox');
+      if(!ok){ box.innerHTML = `<p class="small">⚠️ Couldn't load the sign-in service (no connection, or it's blocked in this preview). This works fine once hosted on GitHub Pages. Your progress is still saving locally in the meantime.</p>`; return; }
+      box.innerHTML = `
+        <input id="email" type="email" placeholder="Email">
+        <input id="pass" type="password" placeholder="Password">
+        <button onclick="doAuth('signIn')">Sign In</button>
+        <div style="height:8px"></div>
+        <button class="ghost" onclick="doAuth('signUp')">Create Account</button>
+      `;
+    });
+  }
+}
+
+async function doAuth(mode){
+  const email=document.getElementById('email').value, pass=document.getElementById('pass').value;
+  try{
+    const cred = mode==='signIn' ? await auth.signInWithEmailAndPassword(email,pass) : await auth.createUserWithEmailAndPassword(email,pass);
+    uid = cred.user.uid;
+    await loadCloud();
+    renderHome();
+  }catch(e){ alert(e.message); }
+}
+
+/* ===== LESSON FLOW ===== */
+let queue=[], current=null, step=0;
+
+function startLesson(unitIndex){
+  queue = UNITS[unitIndex].words;
+  step=0; nextWord();
+}
+
+function nextWord(){
+  if(step>=queue.length){ addXP(0); persist(); renderHome(); return; }
+  current = queue[step];
+  renderFlashcard();
+}
+
+function renderFlashcard(){
+  const dots = queue.map((_,i)=>`<div class="${i<step?'on':i===step?'on':''}"></div>`).join('');
+  app.innerHTML = `
+    <div class="mini-progress">${dots}</div>
+    <div class="card">
+      <div class="small">Word ${step+1} / ${queue.length}</div>
+      <div class="hanzi-big">${current.h}</div>
+      <div class="pinyin">${current.p}</div>
+      <div class="eng">${current.e}</div>
+      <button onclick="speak('${current.h}')">🔊 Hear it</button>
+      <div style="height:8px"></div>
+      <button class="ghost" onclick="renderMC()">Next: Quiz me →</button>
+    </div>
+  `;
+}
+
+function renderMC(){
+  const wrong = ALL_WORDS.filter(w=>w.h!==current.h).sort(()=>Math.random()-.5).slice(0,3);
+  const opts = [...wrong, current].sort(()=>Math.random()-.5);
+  app.innerHTML = `
+    <div class="card">
+      <div class="small">Multiple choice</div>
+      <div class="hanzi-big">${current.h}</div>
+      <div class="pinyin">${current.p}</div>
+      <p>What does this mean?</p>
+      <div id="opts"></div>
+    </div>
+  `;
+  const box = document.getElementById('opts');
+  opts.forEach(o=>{
+    const b=document.createElement('button');
+    b.className='opt'; b.textContent=o.e;
+    b.onclick=()=>{
+      [...box.children].forEach(c=>c.disabled=true);
+      if(o.h===current.h){ b.classList.add('correct'); addXP(15); soundCorrect(); }
+      else { b.classList.add('wrong'); [...box.children].find(c=>c.textContent===current.e).classList.add('correct'); soundWrong(); }
+      setTimeout(renderPinyinQuiz, 700);
+    };
+    box.appendChild(b);
+  });
+}
+
+function renderPinyinQuiz(){
+  app.innerHTML = `
+    <div class="card">
+      <div class="small">Type the pinyin (tone marks optional)</div>
+      <div class="hanzi-big">${current.h}</div>
+      <div class="eng">${current.e}</div>
+      <input id="pyinput" placeholder="e.g. ni hao">
+      <button onclick="checkPinyin()">Check</button>
+      <div id="fb" class="small" style="margin-top:8px"></div>
+    </div>
+  `;
+}
+
+function stripTones(s){ return s.toLowerCase().replace(/[āáǎà]/g,'a').replace(/[ēéěè]/g,'e').replace(/[īíǐì]/g,'i').replace(/[ōóǒò]/g,'o').replace(/[ūúǔù]/g,'u').replace(/\s+/g,''); }
+
+function checkPinyin(){
+  const val = document.getElementById('pyinput').value;
+  const ok = stripTones(val)===stripTones(current.p);
+  document.getElementById('fb').textContent = ok ? '✅ Correct!' : `❌ It's "${current.p}"`;
+  document.getElementById('fb').style.color = ok ? 'var(--good)' : 'var(--bad)';
+  if(ok){ addXP(15); soundCorrect(); } else { soundWrong(); }
+  setTimeout(renderWriting, 900);
+}
+
+function renderWriting(){
+  const firstChar = current.h[0];
+  app.innerHTML = `
+    <div class="card">
+      <div class="small">Watch the stroke order, then try writing it</div>
+      <div class="pinyin">${current.p} — ${current.e}</div>
+      <div id="writer-target" style="width:200px;height:200px;background:var(--card2);border-radius:12px;margin:10px auto;display:flex;align-items:center;justify-content:center;font-size:.8rem;color:var(--sub)">Loading…</div>
+      <button id="animBtn" disabled>▶ Show stroke order</button>
+      <div style="height:8px"></div>
+      <button id="quizBtn" class="ghost" disabled>✍️ Quiz me on this character</button>
+      <div id="fb2" class="small" style="margin-top:8px;text-align:center"></div>
+    </div>
+  `;
+  function finishWord(){ state.learned[current.h]=true; step++; persist(); nextWord(); }
+
+  if(window.HanziWriter){ setupWriter(); }
+  else {
+    loadScript('https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js')
+      .then(setupWriter)
+      .catch(()=>{
+        document.getElementById('writer-target').textContent = firstChar;
+        document.getElementById('writer-target').style.fontSize='3rem';
+        document.getElementById('fb2').textContent = "⚠️ Stroke practice couldn't load here (works fine on GitHub Pages). Skipping ahead.";
+        addXP(10);
+        setTimeout(finishWord, 1800);
+      });
+  }
+
+  function setupWriter(){
+    document.getElementById('writer-target').textContent='';
+    document.getElementById('animBtn').disabled=false;
+    document.getElementById('quizBtn').disabled=false;
+    const writer = HanziWriter.create('writer-target', firstChar, {
+      width:200, height:200, padding:10,
+      strokeColor:'#e6e9ef', radicalColor:'#5eead4',
+      outlineColor:'#2a3140'
+    });
+    document.getElementById('animBtn').onclick=()=>writer.animateCharacter();
+    document.getElementById('quizBtn').onclick=()=>{
+      document.getElementById('fb2').textContent='Draw the character below...';
+      writer.quiz({
+        onComplete: (summary)=>{
+          document.getElementById('fb2').textContent = `✅ Done! (${summary.totalMistakes} mistakes)`;
+          soundCorrect();
+          addXP(20);
+          setTimeout(finishWord, 1200);
+        }
+      });
+    };
+  }
+}
+
+/* ===== BOOT ===== */
+try{
+  loadLocal();
+  renderHome();
+}catch(e){
+  document.getElementById('app').innerHTML = `<div class="card"><p>Something went wrong on load:</p><p class="small">${e.message}</p></div>`;
+}
+</script>
+</body>
+</html>
