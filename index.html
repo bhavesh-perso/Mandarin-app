@@ -88,6 +88,10 @@ h1{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-backgr
 .tab.active{color:var(--accent);}
 .tab .ticon{font-size:1.2rem;}
 .stat-big{font-size:2.2rem;font-weight:800;}
+.mascot{font-size:2.2rem;display:inline-block;animation:bounce 2.2s ease-in-out infinite;}
+@keyframes bounce{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-6px) rotate(4deg)}}
+.mascot-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.mascot-bubble{background:var(--card2);border-radius:14px;padding:8px 12px;font-size:.78rem;position:relative;}
 </style>
 </head>
 <body>
@@ -205,12 +209,287 @@ const UNITS = [
   {h:"她",p:"tā",e:"she / her"},{h:"我们",p:"wǒmen",e:"we / us"},{h:"不客气",p:"búkèqi",e:"you're welcome"},
   {h:"没关系",p:"méi guānxi",e:"it doesn't matter"},{h:"对不起",p:"duìbuqǐ",e:"sorry"},{h:"漂亮",p:"piàoliang",e:"pretty"},
   {h:"没有",p:"méiyǒu",e:"to not have / did not"},{h:"字",p:"zì",e:"character"}
+ ]},
+ {name:"Descriptive Words II", words:[
+  {h:"白",p:"bái",e:"white"},{h:"长",p:"cháng",e:"long"},{h:"对",p:"duì",e:"correct"},{h:"高",p:"gāo",e:"tall / high"},
+  {h:"贵",p:"guì",e:"expensive"},{h:"好吃",p:"hǎochī",e:"tasty"},{h:"黑",p:"hēi",e:"black"},{h:"红",p:"hóng",e:"red"},
+  {h:"近",p:"jìn",e:"nearby"},{h:"快",p:"kuài",e:"quick"},{h:"快乐",p:"kuàilè",e:"happy"},{h:"累",p:"lèi",e:"tired"},
+  {h:"慢",p:"màn",e:"slow"},{h:"便宜",p:"piányi",e:"cheap"},{h:"新",p:"xīn",e:"new"},{h:"远",p:"yuǎn",e:"far"}
+ ]},
+ {name:"Adverbs & Connectors", words:[
+  {h:"别",p:"bié",e:"don't"},{h:"非常",p:"fēicháng",e:"very / extremely"},{h:"还",p:"hái",e:"still / also"},
+  {h:"就",p:"jiù",e:"just / precisely"},{h:"也",p:"yě",e:"also"},{h:"已经",p:"yǐjīng",e:"already"},
+  {h:"一起",p:"yīqǐ",e:"together"},{h:"再",p:"zài",e:"again"},{h:"真",p:"zhēn",e:"really / truly"},
+  {h:"正在",p:"zhèngzài",e:"in the process of"},{h:"最",p:"zuì",e:"most"},{h:"但是",p:"dànshì",e:"but"},
+  {h:"虽然",p:"suīrán",e:"although"},{h:"所以",p:"suǒyǐ",e:"so / therefore"},{h:"因为",p:"yīnwèi",e:"because"},
+  {h:"每",p:"měi",e:"every"},{h:"为什么",p:"wèishénme",e:"why"}
+ ]},
+ {name:"Modal Words & Prepositions", words:[
+  {h:"可能",p:"kěnéng",e:"maybe / might"},{h:"可以",p:"kěyǐ",e:"may / can"},{h:"比",p:"bǐ",e:"to compare / than"},
+  {h:"从",p:"cóng",e:"from"},{h:"往",p:"wǎng",e:"towards"},{h:"次",p:"cì",e:"(measure word: times)"},
+  {h:"件",p:"jiàn",e:"(measure word: items)"},{h:"一下",p:"yīxià",e:"briefly / a bit"}
+ ]},
+ {name:"Family & People II", words:[
+  {h:"弟弟",p:"dìdi",e:"younger brother"},{h:"哥哥",p:"gēge",e:"older brother"},{h:"姐姐",p:"jiějie",e:"older sister"},
+  {h:"妹妹",p:"mèimei",e:"younger sister"},{h:"孩子",p:"háizi",e:"child"},{h:"妻子",p:"qīzi",e:"wife"},
+  {h:"丈夫",p:"zhàngfu",e:"husband"},{h:"大家",p:"dàjiā",e:"everyone"},{h:"您",p:"nín",e:"you (polite)"},{h:"它",p:"tā",e:"it"}
+ ]},
+ {name:"Places & Travel II", words:[
+  {h:"宾馆",p:"bīnguǎn",e:"hotel"},{h:"公司",p:"gōngsī",e:"company"},{h:"火车站",p:"huǒchēzhàn",e:"train station"},
+  {h:"教室",p:"jiàoshì",e:"classroom"},{h:"机场",p:"jīchǎng",e:"airport"},{h:"路",p:"lù",e:"road"},
+  {h:"门",p:"mén",e:"door"},{h:"旁边",p:"pángbiān",e:"next to"},{h:"右边",p:"yòubian",e:"right side"},
+  {h:"左边",p:"zuǒbian",e:"left side"},{h:"公共汽车",p:"gōnggòngqìchē",e:"bus"}
+ ]},
+ {name:"Food & Objects II", words:[
+  {h:"咖啡",p:"kāfēi",e:"coffee"},{h:"鸡蛋",p:"jīdàn",e:"egg"},{h:"面条",p:"miàntiáo",e:"noodles"},
+  {h:"牛奶",p:"niúnǎi",e:"milk"},{h:"西瓜",p:"xīguā",e:"watermelon"},{h:"羊肉",p:"yángròu",e:"lamb"},
+  {h:"鱼",p:"yú",e:"fish"},{h:"手表",p:"shǒubiǎo",e:"wristwatch"},{h:"铅笔",p:"qiānbǐ",e:"pencil"},
+  {h:"报纸",p:"bàozhǐ",e:"newspaper"},{h:"票",p:"piào",e:"ticket"}
+ ]},
+ {name:"Body, Time & Weather", words:[
+  {h:"眼睛",p:"yǎnjing",e:"eye"},{h:"身体",p:"shēntǐ",e:"body / health"},{h:"颜色",p:"yánsè",e:"color"},
+  {h:"时间",p:"shíjiān",e:"time"},{h:"小时",p:"xiǎoshí",e:"hour"},{h:"早上",p:"zǎoshang",e:"morning"},
+  {h:"晚上",p:"wǎnshang",e:"evening"},{h:"去年",p:"qùnián",e:"last year"},{h:"生日",p:"shēngrì",e:"birthday"},
+  {h:"晴",p:"qíng",e:"sunny"},{h:"雪",p:"xuě",e:"snow"},{h:"阴",p:"yīn",e:"overcast"}
+ ]},
+ {name:"New Verbs I", words:[
+  {h:"帮助",p:"bāngzhù",e:"to help"},{h:"唱歌",p:"chànggē",e:"to sing"},{h:"出",p:"chū",e:"to go out"},
+  {h:"穿",p:"chuān",e:"to wear"},{h:"到",p:"dào",e:"to arrive"},{h:"等",p:"děng",e:"to wait"},
+  {h:"懂",p:"dǒng",e:"to understand"},{h:"告诉",p:"gàosu",e:"to tell"},{h:"给",p:"gěi",e:"to give"},
+  {h:"介绍",p:"jièshào",e:"to introduce"},{h:"进",p:"jìn",e:"to enter"},{h:"觉得",p:"juéde",e:"to think / feel"}
+ ]},
+ {name:"New Verbs II", words:[
+  {h:"开始",p:"kāishǐ",e:"to start"},{h:"离",p:"lí",e:"to be away from"},{h:"旅游",p:"lǚyóu",e:"to travel"},
+  {h:"卖",p:"mài",e:"to sell"},{h:"跑步",p:"pǎobù",e:"to jog"},{h:"起床",p:"qǐchuáng",e:"to get up"},
+  {h:"让",p:"ràng",e:"to let / make"},{h:"上班",p:"shàngbān",e:"to go to work"},{h:"生病",p:"shēngbìng",e:"to fall ill"},
+  {h:"说话",p:"shuōhuà",e:"to speak"},{h:"送",p:"sòng",e:"to give / deliver"},{h:"跳舞",p:"tiàowǔ",e:"to dance"}
+ ]},
+ {name:"New Verbs III", words:[
+  {h:"完",p:"wán",e:"to finish"},{h:"玩",p:"wán",e:"to play"},{h:"问",p:"wèn",e:"to ask"},{h:"笑",p:"xiào",e:"to laugh"},
+  {h:"姓",p:"xìng",e:"to be surnamed"},{h:"休息",p:"xiūxi",e:"to rest"},{h:"游泳",p:"yóuyǒng",e:"to swim"},
+  {h:"运动",p:"yùndòng",e:"sports / to exercise"},{h:"找",p:"zhǎo",e:"to look for"},{h:"知道",p:"zhīdào",e:"to know"},
+  {h:"准备",p:"zhǔnbèi",e:"to prepare"},{h:"走",p:"zǒu",e:"to walk / leave"},{h:"洗",p:"xǐ",e:"to wash"},
+  {h:"希望",p:"xīwàng",e:"to hope"}
+ ]},
+ {name:"Miscellaneous Nouns", words:[
+  {h:"错",p:"cuò",e:"mistake"},{h:"房间",p:"fángjiān",e:"room"},{h:"服务员",p:"fúwùyuán",e:"waiter / waitress"},
+  {h:"考试",p:"kǎoshì",e:"exam"},{h:"课",p:"kè",e:"class / lesson"},{h:"男",p:"nán",e:"male"},{h:"女",p:"nǚ",e:"female"},
+  {h:"日",p:"rì",e:"day / sun"},{h:"事情",p:"shìqing",e:"matter"},{h:"题",p:"tí",e:"problem / topic"},
+  {h:"外",p:"wài",e:"outside"},{h:"问题",p:"wèntí",e:"question / issue"},{h:"药",p:"yào",e:"medicine"},
+  {h:"意思",p:"yìsi",e:"meaning"}
+ ]},
+ {name:"HSK3 Feelings & Traits I", words:[
+  {h:"矮",p:"ǎi",e:"short (height)"},{h:"安静",p:"ānjìng",e:"quiet"},{h:"饱",p:"bǎo",e:"full (from eating)"},
+  {h:"聪明",p:"cōngming",e:"smart"},{h:"低",p:"dī",e:"low"},{h:"短",p:"duǎn",e:"short (length)"},
+  {h:"饿",p:"è",e:"hungry"},{h:"方便",p:"fāngbiàn",e:"convenient"},{h:"干净",p:"gānjìng",e:"clean"},
+  {h:"坏",p:"huài",e:"bad / broken"},{h:"黄",p:"huáng",e:"yellow"},{h:"简单",p:"jiǎndān",e:"simple"},
+  {h:"健康",p:"jiànkāng",e:"healthy"},{h:"久",p:"jiǔ",e:"long (time)"}
+ ]},
+ {name:"HSK3 Feelings & Traits II", words:[
+  {h:"旧",p:"jiù",e:"old / worn out"},{h:"渴",p:"kě",e:"thirsty"},{h:"可爱",p:"kě'ài",e:"cute"},
+  {h:"蓝",p:"lán",e:"blue"},{h:"老",p:"lǎo",e:"old"},{h:"绿",p:"lǜ",e:"green"},{h:"难",p:"nán",e:"difficult"},
+  {h:"难过",p:"nánguò",e:"upset"},{h:"年轻",p:"niánqīng",e:"youthful"},{h:"努力",p:"nǔlì",e:"to strive"},
+  {h:"胖",p:"pàng",e:"fat / chubby"},{h:"奇怪",p:"qíguài",e:"strange"},{h:"清楚",p:"qīngchu",e:"clear"},
+  {h:"认真",p:"rènzhēn",e:"serious"}
+ ]},
+ {name:"HSK3 Feelings & Traits III", words:[
+  {h:"热情",p:"rèqíng",e:"enthusiastic"},{h:"容易",p:"róngyì",e:"easy"},{h:"瘦",p:"shòu",e:"thin"},
+  {h:"舒服",p:"shūfu",e:"comfortable"},{h:"甜",p:"tián",e:"sweet"},{h:"突然",p:"tūrán",e:"sudden"},
+  {h:"小心",p:"xiǎoxīn",e:"careful"},{h:"新鲜",p:"xīnxiān",e:"fresh"},{h:"一般",p:"yībān",e:"average"},
+  {h:"一样",p:"yīyàng",e:"the same"},{h:"有名",p:"yǒumíng",e:"famous"},{h:"着急",p:"zháojí",e:"anxious"},
+  {h:"重要",p:"zhòngyào",e:"important"},{h:"主要",p:"zhǔyào",e:"main"}
+ ]},
+ {name:"HSK3 Adverbs I", words:[
+  {h:"比较",p:"bǐjiào",e:"comparatively"},{h:"必须",p:"bìxū",e:"must"},{h:"才",p:"cái",e:"only then"},
+  {h:"当然",p:"dāngrán",e:"of course"},{h:"多么",p:"duōme",e:"how (…!)"},{h:"更",p:"gèng",e:"even more"},
+  {h:"极",p:"jí",e:"extremely"},{h:"几乎",p:"jīhū",e:"almost"},{h:"经常",p:"jīngcháng",e:"often"},
+  {h:"马上",p:"mǎshàng",e:"right away"},{h:"其实",p:"qíshí",e:"actually"}
+ ]},
+ {name:"HSK3 Adverbs II", words:[
+  {h:"特别",p:"tèbié",e:"especially"},{h:"先",p:"xiān",e:"first"},{h:"一定",p:"yīdìng",e:"definitely"},
+  {h:"一共",p:"yīgòng",e:"altogether"},{h:"一直",p:"yīzhí",e:"continuously"},{h:"又",p:"yòu",e:"again"},
+  {h:"越",p:"yuè",e:"the more…"},{h:"只",p:"zhǐ",e:"only"},{h:"终于",p:"zhōngyú",e:"finally"},{h:"总是",p:"zǒngshì",e:"always"}
+ ]},
+ {name:"HSK3 Connectors & Pronouns", words:[
+  {h:"应该",p:"yīnggāi",e:"should"},{h:"愿意",p:"yuànyì",e:"to be willing"},{h:"不但",p:"bùdàn",e:"not only"},
+  {h:"而且",p:"érqiě",e:"moreover"},{h:"还是",p:"háishì",e:"or / still"},{h:"或者",p:"huòzhě",e:"or"},
+  {h:"然后",p:"ránhòu",e:"and then"},{h:"如果",p:"rúguǒ",e:"if"},{h:"一边",p:"yībiān",e:"while (doing)"},
+  {h:"只有",p:"zhǐyǒu",e:"only if"},{h:"那么",p:"nàme",e:"in that case"},{h:"其他",p:"qítā",e:"other"},
+  {h:"这么",p:"zhème",e:"so much"},{h:"自己",p:"zìjǐ",e:"oneself"}
+ ]},
+ {name:"HSK3 Numbers & Particles", words:[
+  {h:"半",p:"bàn",e:"half"},{h:"万",p:"wàn",e:"ten thousand"},{h:"地",p:"de",e:"(adverbial particle)"},
+  {h:"啊",p:"a",e:"(sentence-final particle)"},{h:"感兴趣",p:"gǎnxìngqù",e:"to be interested in"},
+  {h:"被",p:"bèi",e:"(passive marker)"},{h:"除了",p:"chúle",e:"except for"},{h:"跟",p:"gēn",e:"with / and"},
+  {h:"根据",p:"gēnjù",e:"according to"},{h:"关于",p:"guānyú",e:"about / regarding"},{h:"为",p:"wèi",e:"for"},
+  {h:"为了",p:"wèile",e:"in order to"},{h:"向",p:"xiàng",e:"towards"},{h:"种",p:"zhǒng",e:"kind / type"}
+ ]},
+ {name:"HSK3 Measure Words", words:[
+  {h:"把",p:"bǎ",e:"(for handled objects)"},{h:"层",p:"céng",e:"(for floors/layers)"},{h:"段",p:"duàn",e:"(for a length/paragraph)"},
+  {h:"分",p:"fēn",e:"(unit of money)"},{h:"公斤",p:"gōngjīn",e:"kilogram"},{h:"角",p:"jiǎo",e:"(unit of money)"},
+  {h:"刻",p:"kè",e:"quarter hour"},{h:"口",p:"kǒu",e:"(for people in a household)"},{h:"辆",p:"liàng",e:"(for vehicles)"},
+  {h:"双",p:"shuāng",e:"pair"},{h:"条",p:"tiáo",e:"(for long things)"},{h:"碗",p:"wǎn",e:"bowl"},
+  {h:"位",p:"wèi",e:"(polite, for people)"},{h:"元",p:"yuán",e:"(unit of money)"},{h:"张",p:"zhāng",e:"(for flat things)"},
+  {h:"只",p:"zhī",e:"(for small animals)"}
+ ]},
+ {name:"HSK3 Verbs I", words:[
+  {h:"搬",p:"bān",e:"to move (house)"},{h:"帮忙",p:"bāngmáng",e:"to help"},{h:"变化",p:"biànhuà",e:"to change"},
+  {h:"表示",p:"biǎoshì",e:"to show / indicate"},{h:"表演",p:"biǎoyǎn",e:"to perform"},{h:"参加",p:"cānjiā",e:"to participate in"},
+  {h:"差",p:"chà",e:"to differ / lacking"},{h:"迟到",p:"chídào",e:"to arrive late"},{h:"出现",p:"chūxiàn",e:"to appear"},
+  {h:"带",p:"dài",e:"to carry / bring"},{h:"担心",p:"dānxīn",e:"to worry"},{h:"打扫",p:"dǎsǎo",e:"to clean"},
+  {h:"打算",p:"dǎsuàn",e:"to plan"},{h:"锻炼",p:"duànliàn",e:"to exercise"}
+ ]},
+ {name:"HSK3 Verbs II", words:[
+  {h:"发",p:"fā",e:"to send out"},{h:"放",p:"fàng",e:"to put / place"},{h:"放心",p:"fàngxīn",e:"to be at ease"},
+  {h:"发烧",p:"fāshāo",e:"to have a fever"},{h:"发现",p:"fāxiàn",e:"to discover"},{h:"分",p:"fēn",e:"to divide"},
+  {h:"复习",p:"fùxí",e:"to review"},{h:"敢",p:"gǎn",e:"to dare"},{h:"感冒",p:"gǎnmào",e:"to catch a cold"},
+  {h:"刮风",p:"guāfēng",e:"to be windy"},{h:"关",p:"guān",e:"to close / turn off"},{h:"关心",p:"guānxīn",e:"to care about"},
+  {h:"过",p:"guò",e:"to spend / pass (time)"},{h:"害怕",p:"hàipà",e:"to be afraid"}
+ ]},
+ {name:"HSK3 Verbs III", words:[
+  {h:"花",p:"huā",e:"to spend (money/time)"},{h:"画",p:"huà",e:"to draw"},{h:"还",p:"huán",e:"to return (something)"},
+  {h:"换",p:"huàn",e:"to exchange"},{h:"欢迎",p:"huānyíng",e:"to welcome"},{h:"回答",p:"huídá",e:"to answer"},
+  {h:"检查",p:"jiǎnchá",e:"to inspect"},{h:"讲",p:"jiǎng",e:"to speak"},{h:"见面",p:"jiànmiàn",e:"to meet"},
+  {h:"教",p:"jiāo",e:"to teach"},{h:"记得",p:"jìde",e:"to remember"},{h:"接",p:"jiē",e:"to receive / pick up"},
+  {h:"借",p:"jiè",e:"to borrow / lend"},{h:"结婚",p:"jiéhūn",e:"to get married"}
+ ]},
+ {name:"HSK3 Verbs IV", words:[
+  {h:"解决",p:"jiějué",e:"to resolve"},{h:"结束",p:"jiéshù",e:"to finish"},{h:"经过",p:"jīngguò",e:"to pass through"},
+  {h:"决定",p:"juédìng",e:"to decide"},{h:"哭",p:"kū",e:"to cry"},{h:"练习",p:"liànxí",e:"to practice"},
+  {h:"离开",p:"líkāi",e:"to leave"},{h:"了解",p:"liǎojiě",e:"to understand fully"},{h:"聊天",p:"liáotiān",e:"to chat"},
+  {h:"留学",p:"liúxué",e:"to study abroad"},{h:"满意",p:"mǎnyì",e:"to be satisfied"},{h:"明白",p:"míngbai",e:"to understand"},
+  {h:"拿",p:"ná",e:"to take / pick up"},{h:"爬山",p:"páshān",e:"to climb a mountain"}
+ ]},
+ {name:"HSK3 Verbs V", words:[
+  {h:"骑",p:"qí",e:"to ride (bike/horse)"},{h:"起飞",p:"qǐfēi",e:"to take off (flight)"},{h:"起来",p:"qǐlái",e:"to get up"},
+  {h:"请假",p:"qǐngjià",e:"to ask for leave"},{h:"认为",p:"rènwéi",e:"to think / believe"},{h:"上网",p:"shàngwǎng",e:"to go online"},
+  {h:"生气",p:"shēngqì",e:"to get angry"},{h:"使",p:"shǐ",e:"to make / cause"},{h:"试",p:"shì",e:"to try"},
+  {h:"刷牙",p:"shuāyá",e:"to brush teeth"},{h:"疼",p:"téng",e:"to hurt"},{h:"提高",p:"tígāo",e:"to improve"},
+  {h:"同意",p:"tóngyì",e:"to agree"},{h:"完成",p:"wánchéng",e:"to complete"}
+ ]},
+ {name:"HSK3 Verbs VI", words:[
+  {h:"忘记",p:"wàngjì",e:"to forget"},{h:"像",p:"xiàng",e:"to resemble"},{h:"相信",p:"xiāngxìn",e:"to believe"},
+  {h:"洗澡",p:"xǐzǎo",e:"to bathe"},{h:"选择",p:"xuǎnzé",e:"to choose"},{h:"学习",p:"xuéxí",e:"to study"},
+  {h:"需要",p:"xūyào",e:"to need"},{h:"要求",p:"yāoqiú",e:"to demand"},{h:"以为",p:"yǐwéi",e:"to (mistakenly) think"},
+  {h:"用",p:"yòng",e:"to use"},{h:"遇到",p:"yùdào",e:"to run into"},{h:"站",p:"zhàn",e:"to stand / station"},
+  {h:"长",p:"zhǎng",e:"to grow"},{h:"照顾",p:"zhàogu",e:"to take care of"},{h:"祝",p:"zhù",e:"to wish"},{h:"注意",p:"zhùyì",e:"to pay attention"}
+ ]},
+ {name:"HSK3 Around Town", words:[
+  {h:"阿姨",p:"āyí",e:"aunt / housekeeper"},{h:"别人",p:"biérén",e:"other people"},{h:"冰箱",p:"bīngxiāng",e:"refrigerator"},
+  {h:"比赛",p:"bǐsài",e:"competition"},{h:"超市",p:"chāoshì",e:"supermarket"},{h:"城市",p:"chéngshì",e:"city"},
+  {h:"厨房",p:"chúfáng",e:"kitchen"},{h:"词典",p:"cídiǎn",e:"dictionary"},{h:"蛋糕",p:"dàngāo",e:"cake"},
+  {h:"灯",p:"dēng",e:"light / lamp"},{h:"地方",p:"dìfang",e:"place"},{h:"地铁",p:"dìtiě",e:"subway"},
+  {h:"地图",p:"dìtú",e:"map"},{h:"动物",p:"dòngwù",e:"animal"}
+ ]},
+ {name:"HSK3 Objects & Tech", words:[
+  {h:"爱好",p:"àihào",e:"hobby"},{h:"班",p:"bān",e:"class / team"},{h:"办法",p:"bànfǎ",e:"method"},
+  {h:"办公室",p:"bàngōngshì",e:"office"},{h:"包",p:"bāo",e:"bag"},{h:"笔记本",p:"bǐjìběn",e:"notebook"},
+  {h:"词语",p:"cíyǔ",e:"word / expression"},{h:"电视",p:"diànshì",e:"television"},{h:"电梯",p:"diàntī",e:"elevator"},
+  {h:"电影",p:"diànyǐng",e:"movie"},{h:"电子邮件",p:"diànzǐyóujiàn",e:"email"},{h:"耳朵",p:"ěrduo",e:"ear"},
+  {h:"附近",p:"fùjìn",e:"nearby"},{h:"刚才",p:"gāngcái",e:"just now"}
+ ]},
+ {name:"HSK3 Nature & Places", words:[
+  {h:"个子",p:"gèzi",e:"height / stature"},{h:"公园",p:"gōngyuán",e:"park"},{h:"关系",p:"guānxi",e:"relationship"},
+  {h:"国家",p:"guójiā",e:"country"},{h:"过去",p:"guòqù",e:"the past"},{h:"果汁",p:"guǒzhī",e:"fruit juice"},
+  {h:"故事",p:"gùshi",e:"story"},{h:"河",p:"hé",e:"river"},{h:"黑板",p:"hēibǎn",e:"blackboard"},
+  {h:"后来",p:"hòulái",e:"afterwards"},{h:"环境",p:"huánjìng",e:"environment"},{h:"花园",p:"huāyuán",e:"garden"},
+  {h:"会议",p:"huìyì",e:"meeting"},{h:"护照",p:"hùzhào",e:"passport"}
+ ]},
+ {name:"HSK3 Life & Places II", words:[
+  {h:"脚",p:"jiǎo",e:"foot"},{h:"街道",p:"jiēdào",e:"street"},{h:"节目",p:"jiémù",e:"program"},
+  {h:"节日",p:"jiérì",e:"holiday / festival"},{h:"机会",p:"jīhuì",e:"opportunity"},{h:"季节",p:"jìjié",e:"season"},
+  {h:"经理",p:"jīnglǐ",e:"manager"},{h:"句子",p:"jùzi",e:"sentence"},{h:"客人",p:"kèrén",e:"guest"},
+  {h:"空调",p:"kōngtiáo",e:"air conditioning"},{h:"筷子",p:"kuàizi",e:"chopsticks"},{h:"裤子",p:"kùzi",e:"pants"},
+  {h:"脸",p:"liǎn",e:"face"},{h:"邻居",p:"línjū",e:"neighbor"}
+ ]},
+ {name:"HSK3 More Nouns I", words:[
+  {h:"历史",p:"lìshǐ",e:"history"},{h:"礼物",p:"lǐwù",e:"gift"},{h:"楼",p:"lóu",e:"building / floor"},
+  {h:"马",p:"mǎ",e:"horse"},{h:"帽子",p:"màozi",e:"hat"},{h:"米",p:"mǐ",e:"(uncooked) rice / meter"},
+  {h:"面包",p:"miànbāo",e:"bread"},{h:"奶奶",p:"nǎinai",e:"grandmother (paternal)"},{h:"南",p:"nán",e:"south"},
+  {h:"年级",p:"niánjí",e:"grade (in school)"},{h:"鸟",p:"niǎo",e:"bird"},{h:"盘子",p:"pánzi",e:"plate"},
+  {h:"啤酒",p:"píjiǔ",e:"beer"},{h:"瓶子",p:"píngzi",e:"bottle"}
+ ]},
+ {name:"HSK3 More Nouns II", words:[
+  {h:"皮鞋",p:"píxié",e:"leather shoes"},{h:"葡萄",p:"pútao",e:"grape"},{h:"普通话",p:"pǔtōnghuà",e:"Mandarin (standard speech)"},
+  {h:"秋",p:"qiū",e:"autumn"},{h:"裙子",p:"qúnzi",e:"skirt / dress"},{h:"伞",p:"sǎn",e:"umbrella"},
+  {h:"声音",p:"shēngyīn",e:"sound / voice"},{h:"世界",p:"shìjiè",e:"world"},{h:"树",p:"shù",e:"tree"},
+  {h:"水平",p:"shuǐpíng",e:"level (of ability)"},{h:"叔叔",p:"shūshu",e:"uncle"},{h:"数学",p:"shùxué",e:"mathematics"},
+  {h:"司机",p:"sījī",e:"driver"},{h:"太阳",p:"tàiyáng",e:"sun"}
+ ]},
+ {name:"HSK3 More Nouns III", words:[
+  {h:"糖",p:"táng",e:"sugar / candy"},{h:"天气",p:"tiānqì",e:"weather"},{h:"体育",p:"tǐyù",e:"physical education"},
+  {h:"同事",p:"tóngshì",e:"colleague"},{h:"头发",p:"tóufa",e:"hair"},{h:"腿",p:"tuǐ",e:"leg"},
+  {h:"图书馆",p:"túshūguǎn",e:"library"},{h:"文化",p:"wénhuà",e:"culture"},{h:"西",p:"xī",e:"west"},
+  {h:"夏",p:"xià",e:"summer"},{h:"香蕉",p:"xiāngjiāo",e:"banana"},{h:"校长",p:"xiàozhǎng",e:"principal"},
+  {h:"习惯",p:"xíguàn",e:"habit"},{h:"信",p:"xìn",e:"letter"}
+ ]},
+ {name:"HSK3 More Nouns IV", words:[
+  {h:"行李箱",p:"xínglixiāng",e:"suitcase"},{h:"兴趣",p:"xìngqù",e:"interest"},{h:"新闻",p:"xīnwén",e:"news"},
+  {h:"信用卡",p:"xìnyòngkǎ",e:"credit card"},{h:"熊猫",p:"xióngmāo",e:"panda"},{h:"洗手间",p:"xǐshǒujiān",e:"restroom"},
+  {h:"眼镜",p:"yǎnjìng",e:"glasses"},{h:"爷爷",p:"yéye",e:"grandfather (paternal)"},{h:"以后",p:"yǐhòu",e:"afterwards"},
+  {h:"一会儿",p:"yīhuìr",e:"a little while"},{h:"影响",p:"yǐngxiǎng",e:"influence"},{h:"银行",p:"yínháng",e:"bank"},
+  {h:"饮料",p:"yǐnliào",e:"beverage"},{h:"音乐",p:"yīnyuè",e:"music"}
+ ]},
+ {name:"HSK3 More Nouns V", words:[
+  {h:"以前",p:"yǐqián",e:"before / previously"},{h:"游戏",p:"yóuxì",e:"game"},{h:"月亮",p:"yuèliang",e:"the moon"},
+  {h:"照片",p:"zhàopiàn",e:"photograph"},{h:"照相机",p:"zhàoxiàngjī",e:"camera"},{h:"中间",p:"zhōngjiān",e:"in the middle"},
+  {h:"中文",p:"Zhōngwén",e:"Chinese (language)"},{h:"周末",p:"zhōumò",e:"weekend"},{h:"字典",p:"zìdiǎn",e:"dictionary (characters)"},
+  {h:"自行车",p:"zìxíngchē",e:"bicycle"},{h:"嘴",p:"zuǐ",e:"mouth"},{h:"最后",p:"zuìhòu",e:"last / finally"},
+  {h:"最近",p:"zuìjìn",e:"recently"},{h:"作业",p:"zuòyè",e:"homework"},{h:"作用",p:"zuòyòng",e:"impact"}
+ ]},
+ {name:"HSK4 Adjectives I", words:[
+  {h:"安全",p:"ānquán",e:"safe"},{h:"棒",p:"bàng",e:"great"},{h:"笨",p:"bèn",e:"stupid"},
+  {h:"成功",p:"chénggōng",e:"successful"},{h:"诚实",p:"chéngshí",e:"honest"},{h:"粗心",p:"cūxīn",e:"careless"},
+  {h:"得意",p:"déyì",e:"proud of oneself"},{h:"烦恼",p:"fánnǎo",e:"troubled"},{h:"丰富",p:"fēngfù",e:"abundant"},
+  {h:"富",p:"fù",e:"rich"},{h:"复杂",p:"fùzá",e:"complicated"},{h:"共同",p:"gòngtóng",e:"joint / in common"},
+  {h:"合格",p:"hégé",e:"qualified"}
+ ]},
+ {name:"HSK4 Adjectives II", words:[
+  {h:"合适",p:"héshì",e:"suitable"},{h:"厚",p:"hòu",e:"thick"},{h:"火",p:"huǒ",e:"popular / hot"},
+  {h:"活泼",p:"huópo",e:"lively"},{h:"假",p:"jiǎ",e:"fake"},{h:"骄傲",p:"jiāoào",e:"proud"},
+  {h:"激动",p:"jīdòng",e:"excited"},{h:"积极",p:"jījí",e:"active / positive"},{h:"精彩",p:"jīngcǎi",e:"wonderful"},
+  {h:"紧张",p:"jǐnzhāng",e:"nervous"},{h:"开心",p:"kāixīn",e:"happy"},{h:"可怜",p:"kělián",e:"pitiful"},
+  {h:"可惜",p:"kěxī",e:"a shame / unfortunate"}
+ ]},
+ {name:"HSK4 Adjectives III", words:[
+  {h:"空",p:"kōng",e:"empty"},{h:"苦",p:"kǔ",e:"bitter"},{h:"困",p:"kùn",e:"sleepy"},{h:"辣",p:"là",e:"spicy"},
+  {h:"懒",p:"lǎn",e:"lazy"},{h:"浪漫",p:"làngmàn",e:"romantic"},{h:"冷静",p:"lěngjìng",e:"calm"},
+  {h:"凉快",p:"liángkuai",e:"cool (temperature)"},{h:"厉害",p:"lìhai",e:"impressive"},{h:"礼貌",p:"lǐmào",e:"polite"},
+  {h:"流利",p:"liúlì",e:"fluent"},{h:"乱",p:"luàn",e:"chaotic / messy"},{h:"麻烦",p:"máfan",e:"troublesome"}
+ ]},
+ {name:"HSK4 Adjectives IV", words:[
+  {h:"马虎",p:"mǎhu",e:"careless"},{h:"美丽",p:"měilì",e:"beautiful"},{h:"免费",p:"miǎnfèi",e:"free (of charge)"},
+  {h:"难受",p:"nánshòu",e:"to feel unwell"},{h:"暖",p:"nuǎn",e:"warm"},{h:"暖和",p:"nuǎnhuo",e:"warm"},
+  {h:"破",p:"pò",e:"worn out / broken"},{h:"普遍",p:"pǔbiàn",e:"widespread"},{h:"轻",p:"qīng",e:"light / gentle"},
+  {h:"轻松",p:"qīngsōng",e:"relaxed"},{h:"穷",p:"qióng",e:"poor"},{h:"热闹",p:"rènao",e:"lively / bustling"},
+  {h:"伤心",p:"shāngxīn",e:"sad"}
+ ]},
+ {name:"HSK4 Adjectives V", words:[
+  {h:"深",p:"shēn",e:"deep"},{h:"失望",p:"shīwàng",e:"disappointed"},{h:"帅",p:"shuài",e:"handsome"},
+  {h:"顺利",p:"shùnlì",e:"smooth / smoothly"},{h:"死",p:"sǐ",e:"rigid / stiff"},{h:"酸",p:"suān",e:"sour"},
+  {h:"随便",p:"suíbiàn",e:"as one pleases"},{h:"所有",p:"suǒyǒu",e:"all"},{h:"危险",p:"wēixiǎn",e:"dangerous"},
+  {h:"无聊",p:"wúliáo",e:"boring"},{h:"咸",p:"xián",e:"salty"},{h:"香",p:"xiāng",e:"fragrant"},
+  {h:"相同",p:"xiāngtóng",e:"identical"}
+ ]},
+ {name:"HSK4 Adjectives VI", words:[
+  {h:"详细",p:"xiángxì",e:"detailed"},{h:"兴奋",p:"xīngfèn",e:"excited"},{h:"幸福",p:"xìngfú",e:"happy (deeply)"},
+  {h:"辛苦",p:"xīnkǔ",e:"hard work / toilsome"},{h:"严格",p:"yángé",e:"strict"},{h:"阳光",p:"yángguāng",e:"sunny / sunshine"},
+  {h:"严重",p:"yánzhòng",e:"serious"},{h:"勇敢",p:"yǒnggǎn",e:"brave"},{h:"友好",p:"yǒuhǎo",e:"friendly"},
+  {h:"幽默",p:"yōumò",e:"humorous"},{h:"有趣",p:"yǒuqù",e:"interesting"},{h:"优秀",p:"yōuxiù",e:"outstanding"},
+  {h:"原来",p:"yuánlái",e:"formerly / originally"}
+ ]},
+ {name:"HSK4 Adjectives VII", words:[
+  {h:"愉快",p:"yúkuài",e:"pleasant"},{h:"脏",p:"zāng",e:"dirty"},{h:"正常",p:"zhèngcháng",e:"normal"},
+  {h:"正确",p:"zhèngquè",e:"correct"},{h:"正式",p:"zhèngshì",e:"formal"},{h:"真正",p:"zhēnzhèng",e:"real / true"},
+  {h:"直接",p:"zhíjiē",e:"direct"},{h:"重",p:"zhòng",e:"heavy"},{h:"专业",p:"zhuānyè",e:"professional"},
+  {h:"著名",p:"zhùmíng",e:"famous"},{h:"准确",p:"zhǔnquè",e:"accurate"},{h:"准时",p:"zhǔnshí",e:"punctual"},
+  {h:"仔细",p:"zǐxì",e:"careful"},{h:"自信",p:"zìxìn",e:"self-confident"}
  ]}
 ];
 const ALL_WORDS = UNITS.flatMap(u=>u.words);
 
 /* ===== STATE ===== */
-let state = {xp:0, level:1, streak:0, lastDate:null, learned:{}};
+let state = {xp:0, level:1, streak:0, lastDate:null, learned:{}, mistakes:{}, soundOn:true};
 
 function loadLocal(){ try{ const s=localStorage.getItem('hskAscentState'); if(s) state=JSON.parse(s); }catch(e){ console.warn('localStorage unavailable, using in-memory state'); } }
 function saveLocal(){ try{ localStorage.setItem('hskAscentState', JSON.stringify(state)); }catch(e){} }
@@ -233,6 +512,7 @@ function addXP(n){
 
 let audioCtx=null;
 function beep(freq,dur,type){
+  if(!state.soundOn) return;
   try{
     audioCtx = audioCtx || new (window.AudioContext||window.webkitAudioContext)();
     const o=audioCtx.createOscillator(), g=audioCtx.createGain();
@@ -277,7 +557,7 @@ function speak(text){
   try{ const u=new SpeechSynthesisUtterance(text); u.lang='zh-CN'; speechSynthesis.speak(u); }catch(e){}
 }
 
-const UNIT_ICONS = ["👋","🔢","👪","🏃","🏠","🎨","❓","📐","🕐","🍜","🐾","🧭","💪","✨","🎉"];
+const UNIT_ICONS = ["👋","🔢","👪","🏃","🏠","🎨","❓","📐","🕐","🍜","🐾","🧭","💪","✨","🎉","🌈","🔗","🧩","👨‍👩‍👧","🚉","🍳","☀️","🤝","🎯","⚽","📦","😀","😟","⭐","⏱️","♾️","🔀","🧷","📏","🗣️","🧹","🤗","📚","🚴","📝","🏙️","💻","🍃","🏘️","🗂️","👞","⛅","🎒","🎬","🛡️","🏆","😅","💧","🌙","🎊","🦋","🕰️","🤔","🎲","🏁","⛓️","🗺️","📊","🧮","💬"];
 
 function tabBar(active){
   return `<div class="tabbar">
@@ -287,11 +567,24 @@ function tabBar(active){
   </div>`;
 }
 
+const ACHIEVEMENTS = [
+  {id:'first', icon:'🥉', label:'First Unit', test:s=>UNITS.some(u=>u.words.every(w=>s.learned[w.h]))},
+  {id:'streak7', icon:'🔥', label:'7-Day Streak', test:s=>s.streak>=7},
+  {id:'level5', icon:'⭐', label:'Level 5', test:s=>s.level>=5},
+  {id:'hundred', icon:'💯', label:'100 Words', test:s=>Object.keys(s.learned).length>=100},
+  {id:'allhsk1', icon:'🏆', label:'HSK1 Master', test:s=>Object.keys(s.learned).length>=ALL_WORDS.length}
+];
+
 function renderStats(){
   const totalLearned = Object.keys(state.learned).length;
+  const mistakeCount = Object.keys(state.mistakes).length;
   const unitRows = UNITS.map((u,i)=>{
     const done=u.words.filter(w=>state.learned[w.h]).length;
     return `<div class="lesson-row"><span>${UNIT_ICONS[i]||'📖'} ${u.name}</span><span class="small">${done}/${u.words.length}</span></div>`;
+  }).join('');
+  const badgeHTML = ACHIEVEMENTS.map(a=>{
+    const unlocked = a.test(state);
+    return `<div style="text-align:center;opacity:${unlocked?1:.3}"><div style="font-size:1.8rem">${a.icon}</div><div class="small">${a.label}</div></div>`;
   }).join('');
   app.innerHTML = `
     <h1>Your Stats</h1>
@@ -301,10 +594,22 @@ function renderStats(){
       <div><div class="stat-big">${state.streak}🔥</div><div class="small">Streak</div></div>
       <div><div class="stat-big">${totalLearned}</div><div class="small">Words</div></div>
     </div>
+    <div class="card">
+      <div class="small" style="margin-bottom:10px;font-weight:700">ACHIEVEMENTS</div>
+      <div style="display:flex;justify-content:space-between">${badgeHTML}</div>
+    </div>
+    ${mistakeCount>0 ? `<div class="card"><div class="lesson-row"><span>🎯 Weak Words (${mistakeCount})</span><button style="width:auto;padding:8px 14px;font-size:.8rem" onclick="startReview()">Practice</button></div></div>` : ''}
+    <div class="card">
+      <div class="lesson-row"><span>🔊 Sound Effects</span><button style="width:auto;padding:8px 14px;font-size:.8rem" onclick="toggleSound()">${state.soundOn?'On':'Off'}</button></div>
+    </div>
     <div class="card">${unitRows}</div>
     ${tabBar('stats')}
   `;
 }
+
+function toggleSound(){ state.soundOn=!state.soundOn; persist(); renderStats(); }
+
+const MASCOT_LINES = ["加油! (Keep going!)","Every word counts 💪","You're doing great!","Ready for more?","一步一步 — step by step"];
 
 function renderHome(){
   if(justLeveledUp){ justLeveledUp=false; showLevelUp(state.level); }
@@ -330,13 +635,32 @@ function renderHome(){
       </div>
     </div>
     ${hero}
-    <div class="section-label">HSK 1 · All Units</div>
+    <div class="mascot-row"><span class="mascot">🐼</span><div class="mascot-bubble">${MASCOT_LINES[Math.floor(Math.random()*MASCOT_LINES.length)]}</div></div>
+    <div class="section-label">HSK 1 · Units 1-15</div>
     <div class="unit-grid" id="unitList"></div>
     ${tabBar('home')}
   `;
   const TILE_COLORS = ['linear-gradient(135deg,#5eead4,#22d3ee)','linear-gradient(135deg,#a78bfa,#f472b6)','linear-gradient(135deg,#fbbf24,#f97316)','linear-gradient(135deg,#34d399,#10b981)','linear-gradient(135deg,#60a5fa,#818cf8)','linear-gradient(135deg,#f87171,#fb923c)','linear-gradient(135deg,#c084fc,#818cf8)','linear-gradient(135deg,#4ade80,#22c55e)'];
   const box = document.getElementById('unitList');
   UNITS.forEach((u,i)=>{
+    if(i===15){
+      const lbl=document.createElement('div');
+      lbl.className='section-label'; lbl.style.gridColumn='1/-1'; lbl.style.marginTop='4px';
+      lbl.textContent='HSK 2 · New Units';
+      box.appendChild(lbl);
+    }
+    if(i===26){
+      const lbl=document.createElement('div');
+      lbl.className='section-label'; lbl.style.gridColumn='1/-1'; lbl.style.marginTop='4px';
+      lbl.textContent='HSK 3 · New Units';
+      box.appendChild(lbl);
+    }
+    if(i===49){
+      const lbl=document.createElement('div');
+      lbl.className='section-label'; lbl.style.gridColumn='1/-1'; lbl.style.marginTop='4px';
+      lbl.textContent='HSK 4 · New Units';
+      box.appendChild(lbl);
+    }
     const done = u.words.filter(w=>state.learned[w.h]).length;
     const complete = done===u.words.length;
     const pctDone = Math.round(done/u.words.length*100);
@@ -393,6 +717,11 @@ function startLesson(unitIndex){
   queue = UNITS[unitIndex].words;
   step=0; nextWord();
 }
+function startReview(){
+  queue = Object.keys(state.mistakes).map(h=>ALL_WORDS.find(w=>w.h===h)).filter(Boolean);
+  if(queue.length===0){ return; }
+  step=0; nextWord();
+}
 
 function nextWord(){
   if(step>=queue.length){ addXP(0); persist(); renderHome(); return; }
@@ -412,8 +741,19 @@ function renderFlashcard(){
       <button onclick="speak('${current.h}')">🔊 Hear it</button>
       <div style="height:8px"></div>
       <button class="ghost" onclick="renderMC()">Next: Quiz me →</button>
+      <div class="small" style="text-align:center;margin-top:10px">👈 swipe to hear again · swipe to quiz 👉</div>
     </div>
   `;
+  const cardEl = document.querySelector('.card');
+  let touchX=null;
+  cardEl.addEventListener('touchstart', e=>{ touchX=e.touches[0].clientX; });
+  cardEl.addEventListener('touchend', e=>{
+    if(touchX===null) return;
+    const dx = e.changedTouches[0].clientX - touchX;
+    if(dx > 60) renderMC();
+    else if(dx < -60) speak(current.h);
+    touchX=null;
+  });
 }
 
 function renderMC(){
@@ -435,7 +775,7 @@ function renderMC(){
     b.onclick=()=>{
       [...box.children].forEach(c=>c.disabled=true);
       if(o.h===current.h){ b.classList.add('correct'); addXP(15); soundCorrect(); }
-      else { b.classList.add('wrong'); [...box.children].find(c=>c.textContent===current.e).classList.add('correct'); soundWrong(); }
+      else { b.classList.add('wrong'); [...box.children].find(c=>c.textContent===current.e).classList.add('correct'); soundWrong(); state.mistakes[current.h]=true; }
       setTimeout(renderPinyinQuiz, 700);
     };
     box.appendChild(b);
@@ -455,14 +795,14 @@ function renderPinyinQuiz(){
   `;
 }
 
-function stripTones(s){ return s.toLowerCase().replace(/[āáǎà]/g,'a').replace(/[ēéěè]/g,'e').replace(/[īíǐì]/g,'i').replace(/[ōóǒò]/g,'o').replace(/[ūúǔù]/g,'u').replace(/\s+/g,''); }
+function stripTones(s){ return s.toLowerCase().replace(/[āáǎà]/g,'a').replace(/[ēéěè]/g,'e').replace(/[īíǐì]/g,'i').replace(/[ōóǒò]/g,'o').replace(/[ūúǔù]/g,'u').replace(/[1-5]/g,'').replace(/\s+/g,''); }
 
 function checkPinyin(){
   const val = document.getElementById('pyinput').value;
   const ok = stripTones(val)===stripTones(current.p);
   document.getElementById('fb').textContent = ok ? '✅ Correct!' : `❌ It's "${current.p}"`;
   document.getElementById('fb').style.color = ok ? 'var(--good)' : 'var(--bad)';
-  if(ok){ addXP(15); soundCorrect(); } else { soundWrong(); }
+  if(ok){ addXP(15); soundCorrect(); } else { soundWrong(); state.mistakes[current.h]=true; }
   setTimeout(renderWriting, 900);
 }
 
@@ -479,7 +819,7 @@ function renderWriting(){
       <div id="fb2" class="small" style="margin-top:8px;text-align:center"></div>
     </div>
   `;
-  function finishWord(){ state.learned[current.h]=true; step++; persist(); nextWord(); }
+  function finishWord(){ state.learned[current.h]=true; delete state.mistakes[current.h]; step++; persist(); nextWord(); }
 
   if(window.HanziWriter){ setupWriter(); }
   else {
